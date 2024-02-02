@@ -1,40 +1,38 @@
-# Create Resource Group
-resource "random_pet" "rg_name" {
-  prefix = var.resource_group_name_prefix
-}
-
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = random_pet.rg_name.id
+  name     = "${random_pet.prefix.id}-rg"
 }
 
 # Create virtual network
-resource "azurerm_virtual_network" "my_terra_network" {
-  name                = [var.vnet_name]
-  address_space       = [var.address_space]
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+resource "azurerm_virtual_network" "my_terraform_network" {
+  name                = "${random_pet.prefix.id}-vnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
-resource "azurerm_subnet" "private" {
-  name                 = "${var.vnet_name}-Web-subnet"
-  resource_group_name  = azurerm_resource_group.this.name
-  virtual_network_name = azurerm_virtual_network.this.name
-  address_prefixes     = [cidrsubnet(var.address_space, 8, 10)]
+# Create Web subnet
+resource "azurerm_subnet" "my_terraform_subnet" {
+  name                 = "${random_pet.prefix.id}-Web-subnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.my_terraform_network.name
+  address_prefixes     = ["10.0.1.0/24"]
 }
 
-resource "azurerm_subnet" "private" {
-  name                 = "${var.vnet_name}-Data-subnet"
-  resource_group_name  = azurerm_resource_group.this.name
-  virtual_network_name = azurerm_virtual_network.this.name
-  address_prefixes     = [cidrsubnet(var.address_space, 8, 10)]
+# Create Data subnet
+resource "azurerm_subnet" "my_terraform_subnet" {
+  name                 = "${random_pet.prefix.id}-Data-subnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.my_terraform_network.name
+  address_prefixes     = ["10.0.2.0/24"]
 }
 
-resource "azurerm_subnet" "private" {
-  name                 = "${var.nvnet_name}-Jumpbox-subnet"
-  resource_group_name  = azurerm_resource_group.this.name
-  virtual_network_name = azurerm_virtual_network.this.name
-  address_prefixes     = [cidrsubnet(var.address_space, 8, 10)]
+# Create Jumpbox subnet
+resource "azurerm_subnet" "my_terraform_subnet" {
+  name                 = "${random_pet.prefix.id}-Jumpbox-subnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.my_terraform_network.name
+  address_prefixes     = ["10.0.3.0/24"]
 }
 
 # Create public IPs
@@ -104,9 +102,10 @@ resource "azurerm_storage_account" "my_storage_account" {
   account_replication_type = "LRS"
 }
 
+
 # Create virtual machine
 resource "azurerm_windows_virtual_machine" "main" {
-  name                  = "${var.prefix}-vm-01"
+  name                  = "${var.prefix}-vm"
   admin_username        = "azureuser"
   admin_password        = random_password.password.result
   location              = azurerm_resource_group.rg.location
@@ -131,4 +130,29 @@ resource "azurerm_windows_virtual_machine" "main" {
   boot_diagnostics {
     storage_account_uri = azurerm_storage_account.my_storage_account.primary_blob_endpoint
   }
+}
+
+
+# Generate random text for a unique storage account name
+resource "random_id" "random_id" {
+  keepers = {
+    # Generate a new ID only when a new resource group is defined
+    resource_group = azurerm_resource_group.rg.name
+  }
+
+  byte_length = 8
+}
+
+resource "random_password" "password" {
+  length      = 20
+  min_lower   = 1
+  min_upper   = 1
+  min_numeric = 1
+  min_special = 1
+  special     = true
+}
+
+resource "random_pet" "prefix" {
+  prefix = var.prefix
+  length = 1
 }

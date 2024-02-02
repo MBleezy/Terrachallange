@@ -1,25 +1,6 @@
 variable "resource_group_location" {
-  type        = string
   default     = "eastus"
   description = "Location of the resource group."
-}
-
-variable "resource_group_name_prefix" {
-  type        = string
-  default     = "rg"
-  description = "Prefix of the resource group name that's combined with a random ID so name is unique in your Azure subscription."
-}
-
-variable "address_space" {
-  type        = string
-  description = "Cidr range for the Virtual Network"
-  default     = "10.10.0.0/16"
-}
-
-variable "vnet_name" {
-  type        = string
-  description = "prefix for network resources"
-  default     = "terranet"
 }
 
 variable "prefix" {
