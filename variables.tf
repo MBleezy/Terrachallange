@@ -21,3 +21,9 @@ variable "vnet_name" {
   description = "prefix for network resources"
   default     = "terranet"
 }
+
+variable "prefix" {
+  type        = string
+  default     = "win-vm-iis"
+  description = "Prefix of the resource name"
+}
