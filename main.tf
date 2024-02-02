@@ -12,7 +12,7 @@ resource "azurerm_virtual_network" "my_terraform_network" {
 }
 
 # Create Web subnet
-resource "azurerm_Web_subnet" "terraform_Web_subnet" {
+resource "azurerm_subnet" "terraform_Web_subnet" {
   name                 = "${random_pet.prefix.id}-Web-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
@@ -20,7 +20,7 @@ resource "azurerm_Web_subnet" "terraform_Web_subnet" {
 }
 
 # Create Data subnet
-resource "azurerm_Data_subnet" "terraform_Data_subnet" {
+resource "azurerm_subnet" "terraform_Data_subnet" {
   name                 = "${random_pet.prefix.id}-Data-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
@@ -28,7 +28,7 @@ resource "azurerm_Data_subnet" "terraform_Data_subnet" {
 }
 
 # Create Jumpbox subnet
-resource "azurerm_Jump_subnet" "terraform_Jump_subnet" {
+resource "azurerm_subnet" "terraform_Jump_subnet" {
   name                 = "${random_pet.prefix.id}-Jumpbox-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
