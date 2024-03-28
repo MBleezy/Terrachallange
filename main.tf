@@ -1,7 +1,8 @@
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = "${random_pet.prefix.id}-rg"
+  name     = var.resource_group_name
 }
+
 
 # Create virtual network
 resource "azurerm_virtual_network" "my_terraform_network" {
@@ -12,7 +13,7 @@ resource "azurerm_virtual_network" "my_terraform_network" {
 }
 
 # Create Web subnet
-resource "azurerm_Web_subnet" "terraform_Web_subnet" {
+resource "azurerm_subnet" "terraform_Web_subnet" {
   name                 = "${random_pet.prefix.id}-Web-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
@@ -20,7 +21,7 @@ resource "azurerm_Web_subnet" "terraform_Web_subnet" {
 }
 
 # Create Data subnet
-resource "azurerm_Data_subnet" "terraform_Data_subnet" {
+resource "azurerm_subnet" "terraform_Data_subnet" {
   name                 = "${random_pet.prefix.id}-Data-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
@@ -28,7 +29,7 @@ resource "azurerm_Data_subnet" "terraform_Data_subnet" {
 }
 
 # Create Jumpbox subnet
-resource "azurerm_Jump_subnet" "terraform_Jump_subnet" {
+resource "azurerm_subnet" "terraform_Jump_subnet" {
   name                 = "${random_pet.prefix.id}-Jumpbox-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
@@ -81,7 +82,7 @@ resource "azurerm_network_interface" "my_terraform_nic" {
 
   ip_configuration {
     name                          = "my_nic_configuration"
-    subnet_id                     = azurerm_subnet.my_terraform_subnet.id
+    subnet_id                     = azurerm_subnet.terraform_Web_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.my_terraform_public_ip.id
   }
