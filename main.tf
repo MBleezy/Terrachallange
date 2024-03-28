@@ -1,7 +1,8 @@
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = "${random_pet.prefix.id}-rg"
+  name     = var.resource_group_name
 }
+
 
 # Create virtual network
 resource "azurerm_virtual_network" "my_terraform_network" {
