@@ -8,8 +8,15 @@ variable "resource_group_name" {
   description = "Name of the resource group."
 }
 
+
 variable "prefix" {
   type        = string
   default     = "win-vm-iis"
   description = "Prefix of the resource name"
+}
+
+variable "username" {
+  type        = string
+  description = "The username for the local account that will be created on the new VM."
+  default     = "azureadmin"
 }
