@@ -8,6 +8,10 @@ variable "resource_group_name" {
   description = "Name of the resource group."
 }
 
+variable "RGName" {
+  type    = string
+  default = "mbleezarde-sandbox"
+}
 
 variable "prefix" {
   type        = string
