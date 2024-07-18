@@ -210,3 +210,55 @@ resource "random_password" "password" {
   min_special = 1
   special     = true
 }
+
+#Create Azure Recovery Services Vault and Backup Policy
+resource "azurerm_recovery_services_vault" "terra_chal_vault" {
+  name                = "${var.prefix}vault"
+  location            = data.azurerm_resource_group.mbleezarde-sandbox.location
+  resource_group_name = data.azurerm_resource_group.mbleezarde-sandbox.name
+  sku                 = "Standard"
+  storage_mode_type   = var.storage_mode_type
+  soft_delete_enabled = true
+}
+
+resource "azurerm_backup_policy_vm" "terra_vm_backup_policy" {
+  name                = var.vm_backup_policy_name
+  resource_group_name = data.azurerm_resource_group.mbleezarde-sandbox.name
+  recovery_vault_name = azurerm_recovery_services_vault.terra_chal_vault.name
+
+  timezone = "UTC"
+
+  backup {
+    frequency = var.vm_backup_policy_frequency
+    time      = var.vm_backup_policy_time
+  }
+
+  retention_daily {
+    count = 10
+  }
+
+    retention_weekly {
+    count    = 42
+    weekdays = ["Sunday", "Wednesday", "Friday", "Saturday"]
+  }
+
+  retention_monthly {
+    count    = 7
+    weekdays = ["Sunday", "Wednesday"]
+    weeks    = ["First", "Last"]
+  }
+
+  retention_yearly {
+    count    = 77
+    weekdays = ["Sunday"]
+    weeks    = ["Last"]
+    months   = ["January"]
+  }
+}
+
+resource "azurerm_backup_protected_vm" "terra_protected_vm" {
+    resource_group_name             = data.azurerm_resource_group.mbleezarde-sandbox.name
+    recovery_vault_name             = azurerm_recovery_services_vault.terra_chal_vault.name
+    source_vm_id                    = azurerm_windows_virtual_machine.Terra_chal_win_vm.id
+    backup_policy_id                = azurerm_backup_policy_vm.terra_vm_backup_policy.id
+}
