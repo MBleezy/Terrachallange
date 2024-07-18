@@ -8,11 +8,6 @@ variable "resource_group_name" {
   description = "Name of the resource group."
 }
 
-variable "RGName" {
-  type    = string
-  default = "mbleezarde-sandbox"
-}
-
 variable "prefix" {
   type        = string
   default     = "Terra-Chal-"
@@ -57,28 +52,18 @@ variable "storage_mode_type" {
   default     = "ZoneRedundant"
 }
 
-variable "backup_policies" {
-  type = map(object({
-    name                   = string
-    frequency              = string
-    time                   = string
-    retention_daily        = number
-    retention_weekly       = number
-    retention_monthly      = number
-    retention_yearly       = number
-    tags                   = map(string)
-  }))
-  description = "A map of backup policies to be created in the Recovery Services Vault."
-  default = {
-    default_policy = {
-      name                   = "default_policy"
-      frequency              = "Daily"
-      time                   = "12:00"
-      retention_daily        = 35
-      retention_weekly       = 90
-      retention_monthly      = 12
-      retention_yearly       = 10
-      tags                   = {}
-    }
-  }
+variable "vm_backup_policy_name" {
+  type = string
+  default = "terra_chal_backup_policy"
 }
+
+variable "vm_backup_policy_frequency" {
+  type = string
+  default = "Daily"
+}
+
+variable "vm_backup_policy_time"{
+  type = string
+  default = "23:00"
+}
+

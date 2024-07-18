@@ -221,37 +221,44 @@ resource "azurerm_recovery_services_vault" "terra_chal_vault" {
   soft_delete_enabled = true
 }
 
-resource "azurerm_backup_policy_file_share" "terra_chal_backup_policy" {
-  for_each = var.backup_policies
-
-  name                = each.value.name
+resource "azurerm_backup_policy_vm" "terra_vm_backup_policy" {
+  name                = var.vm_backup_policy_name
   resource_group_name = data.azurerm_resource_group.mbleezarde-sandbox.name
   recovery_vault_name = azurerm_recovery_services_vault.terra_chal_vault.name
 
+  timezone = "UTC"
+
   backup {
-    frequency = each.value.frequency
-    time      = each.value.time
+    frequency = var.vm_backup_policy_frequency
+    time      = var.vm_backup_policy_time
   }
 
   retention_daily {
-    count = each.value.retention_daily
+    count = 10
   }
 
-  retention_weekly {
-    count    = each.value.retention_weekly
-    weekdays = ["Sunday"]
+    retention_weekly {
+    count    = 42
+    weekdays = ["Sunday", "Wednesday", "Friday", "Saturday"]
   }
 
   retention_monthly {
-    count    = each.value.retention_monthly
-    weekdays = ["Sunday"]
-    weeks    = ["First"]
+    count    = 7
+    weekdays = ["Sunday", "Wednesday"]
+    weeks    = ["First", "Last"]
   }
 
   retention_yearly {
-    count    = each.value.retention_yearly
+    count    = 77
     weekdays = ["Sunday"]
-    weeks    = ["First"]
-    months   = toset(["January"])
+    weeks    = ["Last"]
+    months   = ["January"]
   }
+}
+
+resource "azurerm_backup_protected_vm" "terra_protected_vm" {
+    resource_group_name             = data.azurerm_resource_group.mbleezarde-sandbox.name
+    recovery_vault_name             = azurerm_recovery_services_vault.terra_chal_vault.name
+    source_vm_id                    = azurerm_windows_virtual_machine.Terra_chal_win_vm.id
+    backup_policy_id                = azurerm_backup_policy_vm.terra_vm_backup_policy.id
 }

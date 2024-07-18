@@ -17,7 +17,3 @@ output "recovery_vault_name" {
   value       = azurerm_recovery_services_vault.terra_chal_vault.name
 }
 
-output "backup_policy_ids" {
-  description = "The IDs of the created Azure File Share backup policies."
-  value       = { for policy in azurerm_backup_policy_file_share.terra_chal_backup_policy : policy.name => policy.id }
-}
