@@ -15,7 +15,7 @@ variable "RGName" {
 
 variable "prefix" {
   type        = string
-  default     = "win-vm-iis"
+  default     = "Terra-Chal-"
   description = "Prefix of the resource name"
 }
 
