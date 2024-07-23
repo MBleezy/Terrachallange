@@ -17,3 +17,10 @@ output "recovery_vault_name" {
   value       = azurerm_recovery_services_vault.terra_chal_vault.name
 }
 
+output "azurerm_key_vault_name" {
+  value = azurerm_key_vault.vault.name
+}
+
+output "azurerm_key_vault_id" {
+  value = azurerm_key_vault.vault.id
+}
